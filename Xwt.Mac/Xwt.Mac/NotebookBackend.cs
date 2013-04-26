@@ -95,7 +95,7 @@ namespace Xwt.Mac
 		
 		public int CurrentTab {
 			get {
-				return Widget.IndexOf (Widget.Selected);
+				return (int)Widget.IndexOf (Widget.Selected);
 			}
 			set {
 				Widget.SelectAt (value);

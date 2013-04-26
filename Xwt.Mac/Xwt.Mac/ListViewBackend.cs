@@ -30,6 +30,20 @@ using Xwt.Backends;
 using System.Collections.Generic;
 using MonoMac.Foundation;
 
+#if MAC64
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+using CGFloat = System.Double;
+#else
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+using NSPoint = System.Drawing.PointF;
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using CGFloat = System.Single;
+#endif
+
+
 namespace Xwt.Mac
 {
 	public class ListViewBackend: TableViewBackend<NSTableView, IListViewEventSink>, IListViewBackend
@@ -65,7 +79,7 @@ namespace Xwt.Mac
 		
 		public void SelectRow (int pos)
 		{
-			Table.SelectRow (pos, false);
+			Table.SelectRow ((ulong)pos, false);
 		}
 		
 		public void UnselectRow (int pos)
@@ -100,7 +114,7 @@ namespace Xwt.Mac
 			this.source = source;
 		}
 
-		public override bool AcceptDrop (NSTableView tableView, NSDraggingInfo info, int row, NSTableViewDropOperation dropOperation)
+		public override bool AcceptDrop (NSTableView tableView, NSDraggingInfo info, NSInteger row, NSTableViewDropOperation dropOperation)
 		{
 			return false;
 		}
@@ -110,17 +124,17 @@ namespace Xwt.Mac
 			return new string [0];
 		}
 
-		public override MonoMac.Foundation.NSObject GetObjectValue (NSTableView tableView, NSTableColumn tableColumn, int row)
+		public override MonoMac.Foundation.NSObject GetObjectValue (NSTableView tableView, NSTableColumn tableColumn, NSInteger row)
 		{
 			return NSObject.FromObject (row);
 		}
 
-		public override int GetRowCount (NSTableView tableView)
+		public override NSInteger GetRowCount (NSTableView tableView)
 		{
 			return source.RowCount;
 		}
 
-		public override void SetObjectValue (NSTableView tableView, MonoMac.Foundation.NSObject theObject, NSTableColumn tableColumn, int row)
+		public override void SetObjectValue (NSTableView tableView, MonoMac.Foundation.NSObject theObject, NSTableColumn tableColumn, NSInteger row)
 		{
 		}
 
@@ -128,7 +142,7 @@ namespace Xwt.Mac
 		{
 		}
 
-		public override NSDragOperation ValidateDrop (NSTableView tableView, NSDraggingInfo info, int row, NSTableViewDropOperation dropOperation)
+		public override NSDragOperation ValidateDrop (NSTableView tableView, NSDraggingInfo info, NSInteger row, NSTableViewDropOperation dropOperation)
 		{
 			return NSDragOperation.None;
 		}

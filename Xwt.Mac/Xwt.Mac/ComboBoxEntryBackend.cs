@@ -28,6 +28,19 @@ using Xwt.Backends;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 
+#if MAC64
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+using CGFloat = System.Double;
+#else
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+using NSPoint = System.Drawing.PointF;
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using CGFloat = System.Single;
+#endif
+
 
 namespace Xwt.Mac
 {
@@ -80,7 +93,7 @@ namespace Xwt.Mac
 
 		public int SelectedRow {
 			get {
-				return Widget.SelectedIndex;
+				return (int)Widget.SelectedIndex;
 			}
 			set {
 				Widget.SelectItem (value);
@@ -143,12 +156,12 @@ namespace Xwt.Mac
 			this.source = source;
 		}
 		
-		public override NSObject ObjectValueForItem (NSComboBox comboBox, int index)
+		public override NSObject ObjectValueForItem (NSComboBox comboBox, NSInteger index)
 		{
-			return NSObject.FromObject (source.GetValue (index, TextColumn));
+			return NSObject.FromObject (source.GetValue ((int)index, TextColumn));
 		}
 		
-		public override int ItemCount (NSComboBox comboBox)
+		public override NSInteger ItemCount (NSComboBox comboBox)
 		{
 			return source.RowCount;
 		}

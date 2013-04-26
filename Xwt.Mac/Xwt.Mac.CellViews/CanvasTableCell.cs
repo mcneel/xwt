@@ -27,6 +27,20 @@ using System;
 using MonoMac.AppKit;
 using System.Drawing;
 using MonoMac.CoreGraphics;
+using MonoMac.Foundation;
+
+#if MAC64
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+using CGFloat = System.Double;
+#else
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+using NSPoint = System.Drawing.PointF;
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using CGFloat = System.Single;
+#endif
 
 namespace Xwt.Mac
 {
@@ -57,14 +71,14 @@ namespace Xwt.Mac
 		{
 			cellView.Initialize (source);
 		}
-		
-		public override SizeF CellSizeForBounds (RectangleF bounds)
+
+		public override NSSize CellSizeForBounds (NSRect bounds)
 		{
 			var r = (ICanvasCellRenderer)cellView;
-			var size = new SizeF ();
+			var size = new NSSize ();
 			r.ApplicationContext.InvokeUserCode (delegate {
 				var s = r.GetRequiredSize ();
-				size = new SizeF ((float)s.Width, (float)s.Height);
+				size = new NSSize ((float)s.Width, (float)s.Height);
 			});
 			if (size.Width > bounds.Width)
 				size.Width = bounds.Width;
@@ -73,7 +87,7 @@ namespace Xwt.Mac
 			return size;
 		}
 
-		public override void DrawInteriorWithFrame (RectangleF cellFrame, NSView inView)
+		public override void DrawInteriorWithFrame (NSRect cellFrame, NSView inView)
 		{
 			var r = (ICanvasCellRenderer)cellView;
 

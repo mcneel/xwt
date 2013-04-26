@@ -27,6 +27,7 @@ using System;
 using Xwt.Backends;
 using System.Collections.Generic;
 using MonoMac.AppKit;
+using MonoMac.Foundation;
 
 namespace Xwt.Mac
 {
@@ -68,7 +69,7 @@ namespace Xwt.Mac
 			return NSScreen.Screens[0] == (NSScreen) backend;
 		}
 
-		public static Rectangle ToDesktopRect (System.Drawing.RectangleF r)
+		public static Rectangle ToDesktopRect (NSRect r)
 		{
 			r.Y = (float)desktopBounds.Height - r.Y - r.Height;
 			if (desktopBounds.Y < 0)
@@ -76,12 +77,12 @@ namespace Xwt.Mac
 			return new Rectangle (r.X, r.Y, r.Width, r.Height);
 		}
 
-		public static System.Drawing.RectangleF FromDesktopRect (Rectangle r)
+		public static NSRect FromDesktopRect (Rectangle r)
 		{
 			r.Y = (float)desktopBounds.Height - r.Y - r.Height;
 			if (desktopBounds.Y < 0)
 				r.Y += (float)desktopBounds.Y;
-			return new System.Drawing.RectangleF ((float)r.X, (float)r.Y, (float)r.Width, (float)r.Height);
+			return new NSRect ((float)r.X, (float)r.Y, (float)r.Width, (float)r.Height);
 		}
 		
 		public override Rectangle GetScreenBounds (object backend)

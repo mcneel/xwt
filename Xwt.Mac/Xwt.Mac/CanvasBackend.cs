@@ -28,6 +28,21 @@ using System;
 using Xwt.Backends;
 using MonoMac.AppKit;
 using MonoMac.CoreGraphics;
+using MonoMac.Foundation;
+
+#if MAC64
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+using CGFloat = System.Double;
+#else
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+using NSPoint = System.Drawing.PointF;
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using CGFloat = System.Single;
+#endif
+
 
 namespace Xwt.Mac
 {
@@ -49,7 +64,7 @@ namespace Xwt.Mac
 		{
 			var w = EventSink.OnGetPreferredWidth ().MinSize;
 			var h = EventSink.OnGetPreferredHeightForWidth (w).MinSize;
-			Widget.SetFrameSize (new System.Drawing.SizeF ((float)w, (float)h)); 
+			Widget.SetFrameSize (new NSSize ((float)w, (float)h)); 
 		}
 
 		public Rectangle Bounds {
@@ -65,7 +80,7 @@ namespace Xwt.Mac
 		
 		public void QueueDraw (Rectangle rect)
 		{
-			view.NeedsToDraw (new System.Drawing.RectangleF ((float)rect.X, (float)rect.Y, (float)rect.Width, (float)rect.Height));
+			view.NeedsToDraw (new NSRect ((float)rect.X, (float)rect.Y, (float)rect.Width, (float)rect.Height));
 		}
 		
 		public void AddChild (IWidgetBackend widget, Rectangle rect)
@@ -74,7 +89,7 @@ namespace Xwt.Mac
 			view.AddSubview (v);
 			
 			// Not using SetWidgetBounds because the view is flipped
-			v.Frame = new System.Drawing.RectangleF ((float)rect.X, (float)rect.Y, (float)rect.Width, (float)rect.Height);;
+			v.Frame = new NSRect ((float)rect.X, (float)rect.Y, (float)rect.Width, (float)rect.Height);;
 			v.NeedsDisplay = true;
 		}
 		
@@ -89,7 +104,7 @@ namespace Xwt.Mac
 			var w = GetWidget (widget);
 			
 			// Not using SetWidgetBounds because the view is flipped
-			w.Frame = new System.Drawing.RectangleF ((float)rect.X, (float)rect.Y, (float)rect.Width, (float)rect.Height);;
+			w.Frame = new NSRect ((float)rect.X, (float)rect.Y, (float)rect.Width, (float)rect.Height);;
 			w.NeedsDisplay = true;
 		}
 	}
@@ -103,14 +118,15 @@ namespace Xwt.Mac
 			this.eventSink = eventSink;
 		}
 
-		public override void DrawRect (System.Drawing.RectangleF dirtyRect)
+		public override void DrawRect (NSRect dirtyRect)
 		{
 			context.InvokeUserCode (delegate {
 				CGContext ctx = NSGraphicsContext.CurrentContext.GraphicsPort;
 
 				//fill BackgroundColor
 				ctx.SetFillColor (Backend.Frontend.BackgroundColor.ToCGColor ());
-				ctx.FillRect (Bounds);
+				var b = new System.Drawing.RectangleF((float)Bounds.X, (float)Bounds.Y, (float)Bounds.Width, (float)Bounds.Height);
+				ctx.FillRect (b);
 
 				var backend = new CGContextBackend {
 					Context = ctx,

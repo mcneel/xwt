@@ -352,14 +352,14 @@ namespace Xwt.Mac
 
 		void IWindowFrameBackend.Move (double x, double y)
 		{
-			var r = FrameRectFor (new System.Drawing.RectangleF ((float)x, (float)y, Frame.Width, Frame.Height));
+			var r = FrameRectFor (new NSRect ((float)x, (float)y, Frame.Width, Frame.Height));
 			SetFrame (r, true);
 		}
 		
 		void IWindowFrameBackend.Resize (double width, double height)
 		{
 			var cr = ContentRectFor (Frame);
-			var r = FrameRectFor (new System.Drawing.RectangleF ((float)cr.X, (float)cr.Y, (float)width, (float)height));
+			var r = FrameRectFor (new NSRect ((float)cr.X, (float)cr.Y, (float)width, (float)height));
 			SetFrame (r, true);
 		}
 		
@@ -418,7 +418,7 @@ namespace Xwt.Mac
 			if (b != ((IWindowBackend)this).Bounds)
 				((IWindowBackend)this).Bounds = b;
 
-		    var r = FrameRectFor (new RectangleF (0, 0, (float)s.Width, (float)s.Height));
+		    var r = FrameRectFor (new NSRect (0, 0, (float)s.Width, (float)s.Height));
 			MinSize = r.Size;
 		}
 

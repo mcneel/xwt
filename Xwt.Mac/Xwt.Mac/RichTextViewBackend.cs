@@ -57,7 +57,7 @@ namespace Xwt.Mac
 		{
 			var f = Widget.Frame;
 			Widget.VerticallyResizable = true;
-			Widget.Frame = new System.Drawing.RectangleF (Widget.Frame.X, Widget.Frame.Y, (float)width, 0);
+			Widget.Frame = new NSRect (Widget.Frame.X, Widget.Frame.Y, (float)width, 0);
 			Widget.SizeToFit ();
 			var h = Widget.Frame.Height;
 			Widget.VerticallyResizable = false;
@@ -162,7 +162,7 @@ namespace Xwt.Mac
 			LinkClicked = null;
 		}
 
-		bool TextLinkClicked (NSTextView textView, NSObject link, uint charIndex)
+		bool TextLinkClicked (NSTextView textView, NSObject link, ulong charIndex)
 		{
 			if (eventSink == null || context == null)
 				return false;
@@ -218,7 +218,7 @@ namespace Xwt.Mac
 			string fontFamily;
 
 			if (font != null) {
-				fontSize = font.PointSize;
+				fontSize = (float)font.PointSize;
 				fontFamily = font.FontName;
 			} else {
 				fontSize = 16;

@@ -92,7 +92,7 @@ namespace Xwt.Mac
 		static NSAttributedString GetAttributedString (string text)
 		{
 			var attrStr = new NSMutableAttributedString (text);
-			var range = new NSRange (0, attrStr.Length);
+			var range = new NSRange (0, (int)attrStr.Length);
 
 			attrStr.AddAttribute (NSAttributedString.ForegroundColorAttributeName, NSColor.Blue, range);
 			attrStr.AddAttribute (NSAttributedString.UnderlineStyleAttributeName, NSNumber.FromInt32 ((int)MonoMac.AppKit.NSUnderlineStyle.Single), range);

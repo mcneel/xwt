@@ -29,6 +29,19 @@ using MonoMac.Foundation;
 using MonoMac.AppKit;
 using Xwt.Backends;
 
+#if MAC64
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+using CGFloat = System.Double;
+#else
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+using NSPoint = System.Drawing.PointF;
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using CGFloat = System.Single;
+#endif
+
 namespace Xwt.Mac
 {
 	public class BoxBackend: ViewBackend<NSView,IWidgetEventSink>, IBoxBackend
@@ -61,7 +74,7 @@ namespace Xwt.Mac
 			for (int n=0; n<widgets.Length; n++) {
 				var w = GetWidget (widgets[n]);
 				var r = rects[n];
-				w.Frame = new System.Drawing.RectangleF ((float)r.Left, (float)r.Top, (float)r.Width, (float)r.Height);
+				w.Frame = new NSRect ((float)r.Left, (float)r.Top, (float)r.Width, (float)r.Height);
 				w.NeedsDisplay = true;
 			}
 		}

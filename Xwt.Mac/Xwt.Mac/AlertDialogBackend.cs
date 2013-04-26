@@ -57,7 +57,7 @@ namespace Xwt.Mac
 				this.AddButton (cmd.Label);
 			}
 
-			return message.Buttons [this.RunModal () - 1000];
+			return message.Buttons [(int)this.RunModal () - 1000];
 		}
 
 		public bool ApplyToAll { get; set; }

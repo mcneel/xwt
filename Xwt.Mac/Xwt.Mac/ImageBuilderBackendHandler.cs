@@ -29,6 +29,7 @@ using Xwt.Drawing;
 using MonoMac.AppKit;
 using MonoMac.CoreGraphics;
 using System.Drawing;
+using MonoMac.Foundation;
 
 namespace Xwt.Mac
 {
@@ -64,7 +65,7 @@ namespace Xwt.Mac
 			bmp.ScaleCTM (1, -1);
 			return new CGContextBackend {
 				Context = bmp,
-				Size = new SizeF (width, height),
+				Size = new NSSize (width, height),
 				InverseViewTransform = bmp.GetCTM ().Invert ()
 			};
 		}

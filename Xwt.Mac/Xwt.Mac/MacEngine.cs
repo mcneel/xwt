@@ -38,6 +38,9 @@ namespace Xwt.Mac
 {
 	public class MacEngine: Xwt.Backends.ToolkitEngineBackend
 	{
+		[DllImport("__Internal")]
+		static extern IntPtr RUI_GetApplicationDelegate();
+
 		static AppDelegate appDelegate;
 		static NSAutoreleasePool pool;
 		
@@ -48,12 +51,16 @@ namespace Xwt.Mac
 		public override void InitializeApplication ()
 		{
 			NSApplication.Init ();
+			/*
 			//Hijack ();
 			if (pool != null)
 				pool.Dispose ();
 			pool = new NSAutoreleasePool ();
 			appDelegate = new AppDelegate (IsGuest);
-			NSApplication.SharedApplication.Delegate = appDelegate;
+			*/
+			IntPtr pDelegate = RUI_GetApplicationDelegate();
+			appDelegate = new AppDelegate (pDelegate, true);
+			//NSApplication.SharedApplication.Delegate = appDelegate;
 		}
 
 		public override void InitializeBackends ()
@@ -214,7 +221,7 @@ namespace Xwt.Mac
 		bool launched;
 		List<WindowBackend> pendingWindows = new List<WindowBackend> ();
 		
-		public AppDelegate (bool launched)
+		public AppDelegate (IntPtr pDelegate, bool launched): base(pDelegate)
 		{
 			this.launched = launched;
 		}

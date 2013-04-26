@@ -26,6 +26,20 @@
 using System;
 using Xwt.Backends;
 using MonoMac.AppKit;
+using MonoMac.Foundation;
+
+#if MAC64
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+using CGFloat = System.Double;
+#else
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+using NSPoint = System.Drawing.PointF;
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using CGFloat = System.Single;
+#endif
 
 namespace Xwt.Mac
 {
@@ -59,7 +73,7 @@ namespace Xwt.Mac
 				Widget.ContentView = clipView;
 				var dummy = new DummyClipView ();
 				dummy.AddSubview (backend.Widget);
-				backend.Widget.Frame = new System.Drawing.RectangleF (0, 0, clipView.Frame.Width, clipView.Frame.Height);
+				backend.Widget.Frame = new NSRect (0, 0, clipView.Frame.Width, clipView.Frame.Height);
 				clipView.DocumentView = dummy;
 				backend.EventSink.SetScrollAdjustments (hs, vs);
 			}
@@ -114,7 +128,7 @@ namespace Xwt.Mac
 				var w = Math.Max (pw.NaturalSize, Widget.ContentView.Frame.Width);
 				var ph = c.Frontend.Surface.GetPreferredHeightForWidth (w);
 				var h = Math.Max (ph.NaturalSize, Widget.ContentView.Frame.Height);
-				view.Frame = new System.Drawing.RectangleF (view.Frame.X, view.Frame.Y, (float)w, (float)h);
+				view.Frame = new NSRect (view.Frame.X, view.Frame.Y, (float)w, (float)h);
 			}
 		}
 		
@@ -154,9 +168,9 @@ namespace Xwt.Mac
 	{
 		ScrollAdjustmentBackend hScroll;
 		ScrollAdjustmentBackend vScroll;
-		float currentX;
-		float currentY;
-		float ratioX = 1, ratioY = 1;
+		double currentX;
+		double currentY;
+		double ratioX = 1, ratioY = 1;
 
 		public CustomClipView (ScrollAdjustmentBackend hScroll, ScrollAdjustmentBackend vScroll)
 		{
@@ -170,7 +184,7 @@ namespace Xwt.Mac
 				return hScroll.LowerValue + (currentX / ratioX);
 			}
 			set {
-				ScrollToPoint (new System.Drawing.PointF ((float)(value - hScroll.LowerValue) * ratioX, currentY));
+				ScrollToPoint (new NSPoint ((float)(value - hScroll.LowerValue) * ratioX, currentY));
 			}
 		}
 
@@ -179,7 +193,7 @@ namespace Xwt.Mac
 				return vScroll.LowerValue + (currentY / ratioY);
 			}
 			set {
-				ScrollToPoint (new System.Drawing.PointF (currentX, (float)(value - vScroll.LowerValue) * ratioY));
+				ScrollToPoint (new NSPoint (currentX, (float)(value - vScroll.LowerValue) * ratioY));
 			}
 		}
 
@@ -189,14 +203,14 @@ namespace Xwt.Mac
 			}
 		}
 
-		public override void SetFrameSize (System.Drawing.SizeF newSize)
+		public override void SetFrameSize (NSSize newSize)
 		{
 			base.SetFrameSize (newSize);
 			var v = DocumentView.Subviews [0];
-			v.Frame = new System.Drawing.RectangleF (v.Frame.X, v.Frame.Y, newSize.Width, newSize.Height);
+			v.Frame = new NSRect (v.Frame.X, v.Frame.Y, newSize.Width, newSize.Height);
 		}
 		
-		public override void ScrollToPoint (System.Drawing.PointF newOrigin)
+		public override void ScrollToPoint (NSPoint newOrigin)
 		{
 			base.ScrollToPoint (newOrigin);
 			var v = DocumentView.Subviews [0];
@@ -208,7 +222,7 @@ namespace Xwt.Mac
 			if (currentY + v.Frame.Height > DocumentView.Frame.Height)
 				currentY = DocumentView.Frame.Height - v.Frame.Height;
 
-			v.Frame = new System.Drawing.RectangleF (currentX, currentY, v.Frame.Width, v.Frame.Height);
+			v.Frame = new NSRect (currentX, currentY, v.Frame.Width, v.Frame.Height);
 
 			hScroll.NotifyValueChanged ();
 			vScroll.NotifyValueChanged ();
@@ -219,7 +233,7 @@ namespace Xwt.Mac
 			var vr = DocumentVisibleRect ();
 			ratioX = hScroll.PageSize != 0 ? vr.Width / (float)hScroll.PageSize : 1;
 			ratioY = vScroll.PageSize != 0 ? vr.Height / (float)vScroll.PageSize : 1;
-			DocumentView.Frame = new System.Drawing.RectangleF (0, 0, (float)(hScroll.UpperValue - hScroll.LowerValue) * ratioX, (float)(vScroll.UpperValue - vScroll.LowerValue) * ratioY);
+			DocumentView.Frame = new NSRect (0, 0, (float)(hScroll.UpperValue - hScroll.LowerValue) * ratioX, (float)(vScroll.UpperValue - vScroll.LowerValue) * ratioY);
 		}
 	}
 }

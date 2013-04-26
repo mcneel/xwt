@@ -31,6 +31,20 @@ using Xwt.Backends;
 using System.Collections.Generic;
 using System.Reflection;
 
+#if MAC64
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+using CGFloat = System.Double;
+#else
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+using NSPoint = System.Drawing.PointF;
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using CGFloat = System.Single;
+#endif
+
+
 namespace Xwt.Mac
 {
 	public class TreeViewBackend: TableViewBackend<NSOutlineView,ITreeViewEventSink>, ITreeViewBackend
@@ -103,7 +117,7 @@ namespace Xwt.Mac
 		{
 			var it = tsource.GetItem (pos);
 			if (it != null)
-				Table.SelectRow (Tree.RowForItem (it), false);
+				Table.SelectRow ((ulong)Tree.RowForItem (it), false);
 		}
 
 		public void UnselectRow (TreePosition pos)
@@ -225,8 +239,8 @@ namespace Xwt.Mac
 			items.TryGetValue (pos, out it);
 			return it;
 		}
-		
-		public override bool AcceptDrop (NSOutlineView outlineView, NSDraggingInfo info, NSObject item, int index)
+
+		public override bool AcceptDrop (NSOutlineView outlineView, NSDraggingInfo info, NSObject item, NSInteger index)
 		{
 			return false;
 		}
@@ -236,10 +250,11 @@ namespace Xwt.Mac
 			throw new NotImplementedException ();
 		}
 
-		public override NSObject GetChild (NSOutlineView outlineView, int childIndex, NSObject ofItem)
+		public override NSObject GetChild (NSOutlineView outlineView, NSInteger childIndex, NSObject ofItem)
 		{
 			var item = (TreeItem) ofItem;
-			var pos = source.GetChild (item != null ? item.Position : null, childIndex);
+			var treePos = item != null ? item.Position : null;
+			var pos = source.GetChild (treePos, (int)childIndex);
 			if (pos != null) {
 				TreeItem res;
 				if (!items.TryGetValue (pos, out res))
@@ -250,7 +265,7 @@ namespace Xwt.Mac
 				return null;
 		}
 
-		public override int GetChildrenCount (NSOutlineView outlineView, NSObject item)
+		public override NSInteger GetChildrenCount (NSOutlineView outlineView, NSObject item)
 		{
 			var it = (TreeItem) item;
 			return source.GetChildrenCount (it != null ? it.Position : null);
@@ -289,7 +304,7 @@ namespace Xwt.Mac
 		{
 		}
 
-		public override NSDragOperation ValidateDrop (NSOutlineView outlineView, NSDraggingInfo info, NSObject item, int index)
+		public override NSDragOperation ValidateDrop (NSOutlineView outlineView, NSDraggingInfo info, NSObject item, NSInteger index)
 		{
 			return NSDragOperation.None;
 		}

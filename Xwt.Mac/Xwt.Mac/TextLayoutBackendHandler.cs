@@ -93,7 +93,7 @@ namespace Xwt.Mac
 
 				Size result = Size.Zero;
 				CTLine [] lines = frame.GetLines ();
-				float lineHeight = li.Font.Ascender - li.Font.Descender + li.Font.Leading;
+				float lineHeight = (float)(li.Font.Ascender - li.Font.Descender + li.Font.Leading);
 
 				// try to approximate Pango's layout
 				foreach (var line in lines) {
@@ -156,11 +156,11 @@ namespace Xwt.Mac
 				if (ellipsize)
 					ellipsis = new CTLine (CreateAttributedString (li, "..."));
 
-				float lineHeight = li.Font.Ascender - li.Font.Descender + li.Font.Leading;
+				float lineHeight = (float)(li.Font.Ascender - li.Font.Descender + li.Font.Leading);
 
 				ctx.SaveState ();
 				ctx.TextMatrix = CGAffineTransform.MakeScale (1f, -1f);
-				ctx.TranslateCTM ((float)x, (float)y + li.Font.Ascender);
+				ctx.TranslateCTM ((float)x, (float)y + (float)li.Font.Ascender);
 				foreach (var line in frame.GetLines ()) {
 					ctx.TextPosition = PointF.Empty;
 					if (ellipsize) // we need to create a new CTLine here because the framesetter already truncated the text for the line

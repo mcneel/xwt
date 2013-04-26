@@ -196,7 +196,7 @@ namespace Xwt.Mac
 		public abstract object GetValue (object pos, int nField);
 		
 		float ICellSource.RowHeight {
-			get { return Table.RowHeight; }
+			get { return (float)Table.RowHeight; }
 			set { Table.RowHeight = value; }
 		}
 		

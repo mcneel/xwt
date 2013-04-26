@@ -87,8 +87,8 @@ namespace Xwt.Mac
 		{
 			float y = (float)rect.Y;
 			if (v.Superview != null)
-				y = v.Superview.Frame.Height - y - (float)rect.Height;
-			v.Frame = new System.Drawing.RectangleF ((float)rect.X, y, (float)rect.Width, (float)rect.Height);
+				y = (float)(v.Superview.Frame.Height - y - (float)rect.Height);
+			v.Frame = new NSRect ((float)rect.X, y, (float)rect.Width, (float)rect.Height);
 		}
 
 		public static Alignment ToAlignment (this NSTextAlignment align)
@@ -134,6 +134,10 @@ namespace Xwt.Mac
 		public static Size ToXwtSize (this SizeF s)
 		{
 			return new Size (s.Width, s.Height);
+		}
+		public static Size ToXwtSize (this NSSize s)
+		{
+			return new Size ((int)s.Width, (int)s.Height);
 		}
 
 		public static RectangleF ToRectangleF (this Rectangle r)
@@ -265,7 +269,7 @@ namespace Xwt.Mac
 			else {
 				img = (NSImage)img.Copy ();
 			}
-			img.Size = new System.Drawing.SizeF ((float)idesc.Size.Width, (float)idesc.Size.Height);
+			img.Size = new NSSize ((float)idesc.Size.Width, (float)idesc.Size.Height);
 			return img;
 		}
 	}

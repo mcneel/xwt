@@ -39,7 +39,7 @@ namespace Xwt.Mac
 {
 	class CGContextBackend {
 		public CGContext Context;
-		public SizeF Size;
+		public NSSize Size;
 		public CGAffineTransform? InverseViewTransform;
 		public Stack<ContextStatus> StatusStack = new Stack<ContextStatus> ();
 		public ContextStatus CurrentStatus = new ContextStatus ();
@@ -239,7 +239,7 @@ namespace Xwt.Mac
 			if (gc.CurrentStatus.Pattern is ImagePatternInfo) {
 
 				var pi = (ImagePatternInfo) gc.CurrentStatus.Pattern;
-				RectangleF bounds = new RectangleF (PointF.Empty, new SizeF (pi.Image.Size.Width, pi.Image.Size.Height));
+				RectangleF bounds = new RectangleF (PointF.Empty, new SizeF ((float)pi.Image.Size.Width, (float)pi.Image.Size.Height));
 				var t = CGAffineTransform.Multiply (CGAffineTransform.MakeScale (1f, -1f), gc.Context.GetCTM ());
 
 				CGPattern pattern;
@@ -250,7 +250,7 @@ namespace Xwt.Mac
 						((CustomImage)pi.Image).DrawInContext (c);
 					});
 				} else {
-					RectangleF empty = RectangleF.Empty;
+					NSRect empty = new NSRect();
 					CGImage cgimg = ((NSImage)pi.Image).AsCGImage (ref empty, null, null);
 					pattern = new CGPattern (bounds, CGAffineTransform.MakeScale (1f, -1f), bounds.Width, bounds.Height,
 					                         CGPatternTiling.ConstantSpacing, true, c => c.DrawImage (bounds, cgimg));
@@ -296,9 +296,10 @@ namespace Xwt.Mac
 			if (image is CustomImage) {
 				((CustomImage)image).DrawInContext ((CGContextBackend)backend);
 			} else {
-				RectangleF rr = new RectangleF (0, 0, (float)image.Size.Width, image.Size.Height);
+				NSRect rr = new NSRect (0, 0, (float)image.Size.Width, image.Size.Height);
 				ctx.ScaleCTM (1f, -1f);
-				ctx.DrawImage (new RectangleF (0, -image.Size.Height, image.Size.Width, image.Size.Height), image.AsCGImage (ref rr, NSGraphicsContext.CurrentContext, null));
+				ctx.DrawImage (new RectangleF (0, (float)-image.Size.Height, (float)image.Size.Width, (float)image.Size.Height),
+				               image.AsCGImage (ref rr, NSGraphicsContext.CurrentContext, null));
 			}
 
 			ctx.RestoreState ();

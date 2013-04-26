@@ -165,7 +165,7 @@ namespace Xwt.Mac
 
 		public int SelectedRow {
 			get {
-				return Widget.IndexOfSelectedItem;
+				return (int)Widget.IndexOfSelectedItem;
 			}
 			set {
 				Widget.SelectItem (value);

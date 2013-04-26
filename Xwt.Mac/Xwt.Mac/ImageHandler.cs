@@ -130,14 +130,14 @@ namespace Xwt.Mac
 
 				var ctx = new CGContextBackend {
 					Context = bmp,
-					Size = new SizeF (pixelWidth, pixelHeight),
+					Size = new NSSize (pixelWidth, pixelHeight),
 					InverseViewTransform = bmp.GetCTM ().Invert ()
 				};
 
 				var ci = (CustomImage)handle;
 				ci.DrawInContext (ctx);
 
-				var img = new NSImage (((CGBitmapContext)bmp).ToImage (), new SizeF (pixelWidth, pixelHeight));
+				var img = new NSImage (((CGBitmapContext)bmp).ToImage (), new NSSize (pixelWidth, pixelHeight));
 				var imageData = img.AsTiff ();
 				var imageRep = (NSBitmapImageRep) NSBitmapImageRep.ImageRepFromData (imageData);
 				var im = new NSImage ();
@@ -271,13 +271,14 @@ namespace Xwt.Mac
 
 		internal void DrawInContext (CGContextBackend ctx)
 		{
-			var s = ctx.Size != SizeF.Empty ? ctx.Size : Size;
+			bool empty = ctx.Size.Width<=0 && ctx.Size.Height<=0;
+			var s = empty ? ctx.Size : Size;
 			actx.InvokeUserCode (delegate {
-				drawCallback (ctx, new Rectangle (0, 0, s.Width, s.Height));
+				drawCallback (ctx, new Rectangle (0, 0, (int)s.Width, (int)s.Height));
 			});
 		}
 
-		public override CGImage AsCGImage (ref RectangleF proposedDestRect, NSGraphicsContext referenceContext, NSDictionary hints)
+		public override CGImage AsCGImage (ref NSRect proposedDestRect, NSGraphicsContext referenceContext, NSDictionary hints)
 		{
 			return base.AsCGImage (ref proposedDestRect, referenceContext, hints);
 		}

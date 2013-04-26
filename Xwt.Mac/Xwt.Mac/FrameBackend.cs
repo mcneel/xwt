@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using MonoMac.AppKit;
+using MonoMac.Foundation;
 using Xwt.Backends;
 using Xwt.Drawing;
 
@@ -38,7 +39,7 @@ namespace Xwt.Mac
 		public override void Initialize ()
 		{
 			ViewObject = new MacFrame ();
-			Widget.ContentViewMargins = new System.Drawing.SizeF (0,0);
+			Widget.ContentViewMargins = new NSSize (0,0);
 		}
 
 		#region IFrameBackend implementation

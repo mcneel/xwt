@@ -94,9 +94,9 @@ namespace Xwt.Mac
 			formater.NumberStyle = NSNumberFormatterStyle.Decimal;
 			stepper.Activated += (sender, e) => input.DoubleValue = stepper.DoubleValue;
 
-			SetFrameSize (new System.Drawing.SizeF (55, 22));
-			stepper.Frame = new System.Drawing.RectangleF (new System.Drawing.PointF (36, 0), new System.Drawing.SizeF (19, 22));
-			input.Frame = new System.Drawing.RectangleF (new System.Drawing.PointF (4, 0), new System.Drawing.SizeF (26, 22));
+			SetFrameSize (new NSSize (55, 22));
+			stepper.Frame = new NSRect (36, 0, 19, 22);
+			input.Frame = new NSRect (4, 0, 26, 22);
 
 			AutoresizesSubviews = true;
 			stepper.AutoresizingMask = NSViewResizingMask.MinXMargin | NSViewResizingMask.MinYMargin;

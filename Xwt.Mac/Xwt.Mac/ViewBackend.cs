@@ -282,9 +282,9 @@ namespace Xwt.Mac
 		
 		public Point ConvertToScreenCoordinates (Point widgetCoordinates)
 		{
-			var lo = Widget.ConvertPointToBase (new PointF ((float)widgetCoordinates.X, (float)widgetCoordinates.Y));
+			var lo = Widget.ConvertPointToBase (new NSPoint ((float)widgetCoordinates.X, (float)widgetCoordinates.Y));
 			lo = Widget.Window.ConvertBaseToScreen (lo);
-			return MacDesktopBackend.ToDesktopRect (new RectangleF (lo.X, lo.Y, 0, Widget.IsFlipped ? 0 : Widget.Frame.Height)).Location;
+			return MacDesktopBackend.ToDesktopRect (new NSRect ((float)lo.X, (float)lo.Y, 0, Widget.IsFlipped ? 0 : (float)Widget.Frame.Height)).Location;
 		}
 		
 		protected virtual Size GetNaturalSize ()
@@ -357,7 +357,7 @@ namespace Xwt.Mac
 			} else {
 				var s = CalcFittingSize ();
 				if (!s.IsZero)
-					Widget.SetFrameSize (new SizeF ((float)s.Width, (float)s.Height));
+					Widget.SetFrameSize (new NSSize ((float)s.Width, (float)s.Height));
 			}
 		}
 		
@@ -369,7 +369,7 @@ namespace Xwt.Mac
 		public virtual void UpdateLayout ()
 		{
 			var m = Frontend.Margin;
-			Widget.SetBoundsOrigin (new PointF (-(float)m.Left, -(float)m.Top));
+			Widget.SetBoundsOrigin (new NSPoint (-(float)m.Left, -(float)m.Top));
 			if (autosize)
 				AutoUpdateSize ();
 		}
@@ -378,7 +378,7 @@ namespace Xwt.Mac
 		{
 			var ws = Frontend.Surface.GetPreferredWidth ();
 			var h = Frontend.Surface.GetPreferredHeightForWidth (ws.NaturalSize);
-			Widget.SetFrameSize (new SizeF ((float)ws.NaturalSize, (float)h.NaturalSize));
+			Widget.SetFrameSize (new NSSize ((float)ws.NaturalSize, (float)h.NaturalSize));
 		}
 
 		NSObject gotFocusObserver;
@@ -445,7 +445,7 @@ namespace Xwt.Mac
 		
 		public void DragStart (DragStartData sdata)
 		{
-			var lo = Widget.ConvertPointToBase (new PointF (Widget.Bounds.X, Widget.Bounds.Y));
+			var lo = Widget.ConvertPointToBase (new NSPoint (Widget.Bounds.X, Widget.Bounds.Y));
 			lo = Widget.Window.ConvertBaseToScreen (lo);
 			var ml = NSEvent.CurrentMouseLocation;
 			var pb = NSPasteboard.FromName (NSPasteboard.NSDragPasteboardName);
@@ -455,8 +455,8 @@ namespace Xwt.Mac
 				throw new ArgumentNullException ("data");
 			InitPasteboard (pb, sdata.Data);
 			var img = (NSImage)sdata.ImageBackend;
-			var pos = new PointF (ml.X - lo.X - (float)sdata.HotX, lo.Y - ml.Y - (float)sdata.HotY + img.Size.Height);
-			Widget.DragImage (img, pos, new SizeF (0, 0), NSApplication.SharedApplication.CurrentEvent, pb, Widget, true);
+			var pos = new NSPoint (ml.X - lo.X - (float)sdata.HotX, lo.Y - ml.Y - (float)sdata.HotY + img.Size.Height);
+			Widget.DragImage (img, pos, new NSSize (0, 0), NSApplication.SharedApplication.CurrentEvent, pb, Widget, true);
 		}
 		
 		public void SetDragSource (TransferDataType[] types, DragDropAction dragAction)

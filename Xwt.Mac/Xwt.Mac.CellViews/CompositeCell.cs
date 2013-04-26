@@ -109,7 +109,7 @@ namespace Xwt.Mac
 		public override bool IsOpaque {
 			get {
 				var b = base.IsOpaque;
-				return true;
+				return b;
 			}
 		}
 		
@@ -125,34 +125,34 @@ namespace Xwt.Mac
 
 			var s = CellSize;
 			if (s.Height > source.RowHeight)
-				source.RowHeight = s.Height;
+				source.RowHeight = (float)s.Height;
 		}
 		
-		public override void CalcDrawInfo (RectangleF aRect)
+		public override void CalcDrawInfo (NSRect aRect)
 		{
 			base.CalcDrawInfo (aRect);
 		}
 
-		SizeF CalcSize ()
+		NSSize CalcSize ()
 		{
 			float w = 0;
 			float h = 0;
 			foreach (NSCell c in cells) {
 				var s = c.CellSize;
 				if (direction == Orientation.Horizontal) {
-					w += s.Width;
+					w += (float)s.Width;
 					if (s.Height > h)
-						h = s.Height;
+						h = (float)s.Height;
 				} else {
-					h += s.Height;
+					h += (float)s.Height;
 					if (s.Width > w)
-						w = s.Width;
+						w = (float)s.Width;
 				}
 			}
-			return new SizeF (w, h);
+			return new NSSize (w, h);
 		}
 
-		public override SizeF CellSizeForBounds (RectangleF bounds)
+		public override NSSize CellSizeForBounds (NSRect bounds)
 		{
 			return CalcSize ();
 		}
@@ -179,20 +179,20 @@ namespace Xwt.Mac
 			}
 		}
 		
-		public override void DrawInteriorWithFrame (RectangleF cellFrame, NSView inView)
+		public override void DrawInteriorWithFrame (NSRect cellFrame, NSView inView)
 		{
 			foreach (CellPos cp in GetCells(cellFrame))
 				cp.Cell.DrawInteriorWithFrame (cp.Frame, inView);
 		}
 		
-		public override void Highlight (bool flag, RectangleF withFrame, NSView inView)
+		public override void Highlight (bool flag, NSRect withFrame, NSView inView)
 		{
 			foreach (CellPos cp in GetCells(withFrame)) {
 				cp.Cell.Highlight (flag, cp.Frame, inView);
 			}
 		}
 		
-		public override NSCellHit HitTest (NSEvent forEvent, RectangleF inRect, NSView ofView)
+		public override NSCellHit HitTest (NSEvent forEvent, NSRect inRect, NSView ofView)
 		{
 			foreach (CellPos cp in GetCells(inRect)) {
 				var h = cp.Cell.HitTest (forEvent, cp.Frame, ofView);
@@ -202,7 +202,7 @@ namespace Xwt.Mac
 			return NSCellHit.None;
 		}
 		
-		public override bool StartTracking (PointF startPoint, NSView inView)
+		public override bool StartTracking (NSPoint startPoint, NSView inView)
 		{
 			foreach (NSCell c in cells) {
 				if (c.StartTracking (startPoint, inView)) {
@@ -213,7 +213,7 @@ namespace Xwt.Mac
 			return false;
 		}
 		
-		public override void StopTracking (PointF lastPoint, PointF stopPoint, NSView inView, bool mouseIsUp)
+		public override void StopTracking (NSPoint lastPoint, NSPoint stopPoint, NSView inView, bool mouseIsUp)
 		{
 			if (trackingCell != null) {
 				try {
@@ -224,7 +224,7 @@ namespace Xwt.Mac
 			}
 		}
 		
-		public override bool ContinueTracking (PointF lastPoint, PointF currentPoint, NSView inView)
+		public override bool ContinueTracking (NSPoint lastPoint, NSPoint currentPoint, NSView inView)
 		{
 			if (trackingCell != null)
 				return trackingCell.ContinueTracking (lastPoint, currentPoint, inView);
@@ -232,22 +232,26 @@ namespace Xwt.Mac
 				return false;
 		}
 		
-		IEnumerable<CellPos> GetCells (RectangleF cellFrame)
+		IEnumerable<CellPos> GetCells (NSRect cellFrame)
 		{
 			if (direction == Orientation.Horizontal) {
 				foreach (NSCell c in cells) {
 					var s = c.CellSize;
 					var w = Math.Min (cellFrame.Width, s.Width);
-					RectangleF f = new RectangleF (cellFrame.X, cellFrame.Y, w, cellFrame.Height);
+					NSRect f = new NSRect (cellFrame.X, cellFrame.Y, w, cellFrame.Height);
 					cellFrame.X += w;
 					cellFrame.Width -= w;
-					yield return new CellPos () { Cell = c, Frame = f };
+					yield return new CellPos () 
+					{
+						Cell = c,
+						Frame = f 
+					};
 				}
 			} else {
-				float y = cellFrame.Y;
+				double y = cellFrame.Y;
 				foreach (NSCell c in cells) {
 					var s = c.CellSize;
-					RectangleF f = new RectangleF (cellFrame.X, y, s.Width, cellFrame.Height);
+					var f = new NSRect (cellFrame.X, y, s.Width, cellFrame.Height);
 					y += s.Height;
 					yield return new CellPos () { Cell = c, Frame = f };
 				}
@@ -257,7 +261,7 @@ namespace Xwt.Mac
 		struct CellPos
 		{
 			public NSCell Cell;
-			public RectangleF Frame;
+			public NSRect Frame;
 		}
 	}
 }

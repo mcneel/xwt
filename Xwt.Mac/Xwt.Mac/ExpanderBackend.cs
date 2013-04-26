@@ -8,6 +8,19 @@ using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;
 
+#if MAC64
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+using CGFloat = System.Double;
+#else
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+using NSPoint = System.Drawing.PointF;
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using CGFloat = System.Single;
+#endif
+
 namespace Xwt.Mac
 {
 	class ExpanderBackend : ViewBackend<MacExpander, IExpandEventSink>, IExpanderBackend
@@ -88,11 +101,11 @@ namespace Xwt.Mac
 		public MacExpander (IWidgetEventSink eventSink, ApplicationContext context): base (eventSink, context)
 		{
 			expander = new ExpanderWidget () {
-				Frame = new RectangleF (0, 0, 80, 21),
+				Frame = new NSRect (0, 0, 80, 21),
 				AutoresizingMask = NSViewResizingMask.WidthSizable
 			};
 			box = new CollapsibleBox () { AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable };
-			box.SetFrameOrigin (new PointF (0, 21));
+			box.SetFrameOrigin (new NSPoint (0, 21));
 			expander.DisclosureToggled += (sender, e) => box.Expanded = expander.On;
 			AddSubview (expander);
 			AddSubview (box);
@@ -146,7 +159,7 @@ namespace Xwt.Mac
 				BezelStyle = NSBezelStyle.Disclosure,
 				AutoresizingMask = NSViewResizingMask.MaxYMargin,
 				ImagePosition = NSCellImagePosition.ImageOnly,
-				Frame = new RectangleF (5, 4, 13, 13),
+				Frame = new NSRect (5, 4, 13, 13),
 				State = NSCellStateValue.Off
 			};
 			disclosure.SetButtonType (NSButtonType.OnOff);
@@ -159,7 +172,7 @@ namespace Xwt.Mac
 				Bordered = false,
 				AutoresizingMask = NSViewResizingMask.MaxYMargin | NSViewResizingMask.WidthSizable,
 				Alignment = NSTextAlignment.Left,
-				Frame = new RectangleF (17, 3, 60, 13),
+				Frame = new NSRect (17, 3, 60, 13),
 				Target = disclosure,
 				Action = new Selector ("performClick:")
 			};
@@ -201,10 +214,10 @@ namespace Xwt.Mac
 			}
 		}
 
-		public override void DrawRect (RectangleF dirtyRect)
+		public override void DrawRect (NSRect dirtyRect)
 		{
 			backgroundGradient.DrawInRect (Frame, -90);
-			if (dirtyRect == Frame) {
+			if (dirtyRect.X == Frame.X && dirtyRect.Y == Frame.Y && dirtyRect.Width==Frame.Width && dirtyRect.Height==Frame.Height) {
 				strokeColor.SetStroke ();
 				NSBezierPath.StrokeRect (dirtyRect);
 			}
@@ -224,7 +237,7 @@ namespace Xwt.Mac
 			TitlePosition = NSTitlePosition.NoTitle;
 			BorderType = NSBorderType.NoBorder;
 			BoxType = NSBoxType.NSBoxPrimary;
-			ContentViewMargins = new SizeF (0, 0);
+			ContentViewMargins = new NSSize (0, 0);
 		}
 
 		public void SetContent (NSView view)
@@ -244,8 +257,8 @@ namespace Xwt.Mac
 			if (expanded != value) {
 				expanded = value;
 				var frameSize = Frame.Size;
-				SizeF newFrameSize = new SizeF (frameSize.Width, otherHeight);
-				otherHeight = frameSize.Height;
+				var newFrameSize = new NSSize ((float)frameSize.Width, otherHeight);
+				otherHeight = (float)frameSize.Height;
 				SetFrameSize (newFrameSize, animate);
 			}
 		}
@@ -256,20 +269,20 @@ namespace Xwt.Mac
 			}
 		}
 
-		RectangleF FrameForNewSizePinnedToTopLeft (SizeF newFrameSize)
+		NSRect FrameForNewSizePinnedToTopLeft (NSSize newFrameSize)
 		{
 			var frame = Frame;
 			frame.Size = newFrameSize;
 			return frame;
 		}
 
-		public void SetFrameSize (SizeF newFrameSize, bool animating)
+		public void SetFrameSize (NSSize newFrameSize, bool animating)
 		{
-			RectangleF newFrame = FrameForNewSizePinnedToTopLeft (newFrameSize);
+			var newFrame = FrameForNewSizePinnedToTopLeft (newFrameSize);
 			if (animating) {
 				NSAnimation animation = new NSViewAnimation (new [] {
 					NSDictionary.FromObjectsAndKeys (
-					    new object[] { this, NSValue.FromRectangleF (Frame), NSValue.FromRectangleF (newFrame) },
+					    new object[] { this, NSValue.FromRectangle (Frame), NSValue.FromRectangle(newFrame) },
 						new object[] { NSViewAnimation.TargetKey, NSViewAnimation.StartFrameKey, NSViewAnimation.EndFrameKey }
 					)
 				});
